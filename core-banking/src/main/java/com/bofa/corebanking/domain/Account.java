@@ -8,7 +8,7 @@ import com.bofa.common.util.AccountNumbers;
 import java.math.BigDecimal;
 import java.util.Date;
 
-/** Demand deposit account (DDA-CHK, DDA-SAV) or an internal GL account (GL-*). */
+/** Demand deposit account (DDA-CHK, DDA-SAV), credit card (CC-VISA) or an internal GL account (GL-*). */
 public class Account {
 
     private String accountNumber;
