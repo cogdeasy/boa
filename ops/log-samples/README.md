@@ -1,6 +1,6 @@
 # Production log extracts
 
-Sanitised extracts from the `core-banking` production cluster (nbcore-app-01..04), kept for
+Sanitised extracts from the `core-banking` production cluster (boacore-app-01..04), kept for
 incident reviews. Account numbers are masked to the last four digits; user names are tokenised.
 
 | File | Window (America/New_York) |

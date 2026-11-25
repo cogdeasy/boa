@@ -9,7 +9,7 @@ spring:
     serialization:
       write-dates-as-timestamps: false
 
-northbridge:
+bofa:
   core-banking:
     base-url: http://localhost:8080/api/v1
     username: svc.payments
@@ -17,4 +17,4 @@ northbridge:
 
 logging:
   level:
-    com.northbridge: INFO
+    com.bofa: INFO

@@ -1,4 +1,4 @@
-# Northbridge Core Platform — API contract
+# BofA Core Platform — API contract
 
 All services speak JSON over HTTP. Amounts are decimal strings with two places (`"125.40"`), dates are
 `yyyy-MM-dd`, timestamps are ISO-8601 in America/New_York. Account numbers are 12-digit DDA numbers
@@ -73,7 +73,7 @@ Authentication is HTTP Basic against the core-banking user store. Roles: `CUSTOM
 - `POST /bill` `{ "cif", "fromAccount", "payeeId", "amount", "sendOn" }` → `201 { "paymentId": "BP-...", "status": "SCHEDULED" }`
 - `POST /p2p` `{ "cif", "fromAccount", "recipient": { "email" | "phone" }, "amount", "memo" }` → `201 { "paymentId": "P2P-...", "status": "SENT" }`
 - `GET /history?cif=100000001` → `[Payment]`
-Payments posts money movement through core-banking `POST /transfers` (to the GL-SUSP suspense account) and shares `nb-common` (Money, AccountNumbers, BankDates) with core-banking.
+Payments posts money movement through core-banking `POST /transfers` (to the GL-SUSP suspense account) and shares `boa-common` (Money, AccountNumbers, BankDates) with core-banking.
 
 ## statements-service (`:8082/api/v1/statements`)
 - `GET /{accountNumber}?month=2026-10` → `{ "accountNumber", "period", "openingBalance", "closingBalance", "lines": [Transaction] }`

@@ -1,13 +1,13 @@
-# Northbridge Core Platform
+# BofA Core Platform
 
-Core deposit platform for Northbridge Federal Bank: customer information (CIF), demand-deposit
+Core deposit platform for Bank of America: customer information (CIF), demand-deposit
 accounts (DDA), postings, funds holds, internal book transfers, end-of-day (EOD) processing and
 customer statements. Online channels (teller console, mobile, payments hub) call this platform
 through the REST contract in [`docs/API.md`](docs/API.md).
 
 | Module | Port | Purpose |
 |---|---|---|
-| `nb-common` | – | Shared library: `Money`, `BankDates`, `AccountNumbers`, STMT-XML JAXB helpers, token cipher, audit logger. Also consumed by `boa-payments`. |
+| `boa-common` | – | Shared library: `Money`, `BankDates`, `AccountNumbers`, STMT-XML JAXB helpers, token cipher, audit logger. Also consumed by `boa-payments`. |
 | `core-banking` | 8080 | CIF, DDA, postings, holds, book transfers, EOD batch, ops endpoints, SLO metrics. |
 | `statements-service` | 8082 | Monthly statements (JSON and PDF) built from core-banking postings. |
 
@@ -39,7 +39,7 @@ Swagger UI: http://localhost:8080/swagger-ui.html
 
 ## Operations
 
-- EOD runs at 20:00 America/New_York on business days (`northbridge.eod.cron`): releases expired
+- EOD runs at 20:00 America/New_York on business days (`bofa.eod.cron`): releases expired
   holds and accrues savings interest. Ops can trigger it with `POST /api/v1/ops/eod/run`.
 - `/api/v1/ops/health/slo` reports rolling 15-minute p50/p95 latency and error rate per endpoint.
   Targets: p95 < 300 ms and error rate < 0.5 % for all customer-facing endpoints.
@@ -52,7 +52,7 @@ Swagger UI: http://localhost:8080/swagger-ui.html
 | CIF | Customer Information File number (9 digits) |
 | DDA | Demand-deposit account; products `DDA-CHK` (checking) and `DDA-SAV` (savings) |
 | GL-SUSP | Internal suspense general-ledger account used by the payments hub |
-| Book transfer | Same-bank transfer between two Northbridge accounts, posted immediately |
+| Book transfer | Same-bank transfer between two Bank of America accounts, posted immediately |
 | Hold | Amount reserved against available balance until `release_on` |
 | EOD | End-of-day batch; cutoff is 20:00 ET, later postings take the next business date |
 | STMT-XML | Statement interchange format received from the print/archive vendor |

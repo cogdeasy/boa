@@ -13,7 +13,7 @@ pipeline {
         }
         stage('Publish') {
             when { branch 'main' }
-            steps { sh 'mvn -B deploy -DskipTests -DaltDeploymentRepository=nexus::default::https://nexus.corp.northbridgefed.com/repository/maven-snapshots/' }
+            steps { sh 'mvn -B deploy -DskipTests -DaltDeploymentRepository=nexus::default::https://nexus.corp.bofa.com/repository/maven-snapshots/' }
         }
     }
     post {

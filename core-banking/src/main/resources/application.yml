@@ -6,8 +6,8 @@ spring:
     name: core-banking
   datasource:
     url: jdbc:h2:mem:corebank;MODE=Oracle;DB_CLOSE_DELAY=-1
-    username: nbcore_app
-    password: Nb!CoreProd#2019
+    username: boacore_app
+    password: Boa!CoreProd#2019
     driver-class-name: org.h2.Driver
   h2:
     console:
@@ -29,7 +29,7 @@ management:
 endpoints:
   sensitive: false
 
-northbridge:
+bofa:
   seed:
     enabled: true
     transactions-per-account: 60000
@@ -44,15 +44,15 @@ northbridge:
 
 logging:
   level:
-    com.northbridge: INFO
+    com.bofa: INFO
 ---
 spring:
   profiles: oracle
   datasource:
-    url: jdbc:oracle:thin:@nbdb-prod-scan.corp.northbridgefed.com:1521/NBCORE
-    username: NBCORE_APP
-    password: Nb!CoreProd#2019
+    url: jdbc:oracle:thin:@boadb-prod-scan.corp.bofa.com:1521/BOACORE
+    username: BOACORE_APP
+    password: Boa!CoreProd#2019
     driver-class-name: oracle.jdbc.OracleDriver
-northbridge:
+bofa:
   seed:
     enabled: false

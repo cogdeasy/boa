@@ -11,15 +11,15 @@
         <relativePath/>
     </parent>
 
-    <groupId>com.northbridge</groupId>
-    <artifactId>northbridge-core-platform</artifactId>
+    <groupId>com.bofa</groupId>
+    <artifactId>boa-core-platform</artifactId>
     <version>4.12.0-SNAPSHOT</version>
     <packaging>pom</packaging>
-    <name>Northbridge Core Platform</name>
-    <description>Deposit accounts, posting and statements for Northbridge Federal Bank retail banking.</description>
+    <name>BofA Core Platform</name>
+    <description>Deposit accounts, posting and statements for Bank of America retail banking.</description>
 
     <modules>
-        <module>nb-common</module>
+        <module>boa-common</module>
         <module>core-banking</module>
         <module>statements-service</module>
     </modules>
@@ -40,8 +40,8 @@
     <dependencyManagement>
         <dependencies>
             <dependency>
-                <groupId>com.northbridge</groupId>
-                <artifactId>nb-common</artifactId>
+                <groupId>com.bofa</groupId>
+                <artifactId>boa-common</artifactId>
                 <version>${project.version}</version>
             </dependency>
             <dependency>
