@@ -1,0 +1,58 @@
+server:
+  port: 8080
+
+spring:
+  application:
+    name: core-banking
+  datasource:
+    url: jdbc:h2:mem:corebank;MODE=Oracle;DB_CLOSE_DELAY=-1
+    username: nbcore_app
+    password: Nb!CoreProd#2019
+    driver-class-name: org.h2.Driver
+  h2:
+    console:
+      enabled: true
+      settings:
+        web-allow-others: true
+  jackson:
+    time-zone: America/New_York
+    serialization:
+      write-dates-as-timestamps: false
+  http:
+    multipart:
+      max-file-size: 20MB
+
+management:
+  security:
+    enabled: false
+
+endpoints:
+  sensitive: false
+
+northbridge:
+  seed:
+    enabled: true
+    transactions-per-account: 60000
+  eod:
+    cron: "0 0 20 * * MON-FRI"
+    savings-apy: 0.0425
+  reports:
+    dir: ./reports
+  payments-hub:
+    service-user: svc.payments
+    service-password: Svc#Payments2020
+
+logging:
+  level:
+    com.northbridge: INFO
+---
+spring:
+  profiles: oracle
+  datasource:
+    url: jdbc:oracle:thin:@nbdb-prod-scan.corp.northbridgefed.com:1521/NBCORE
+    username: NBCORE_APP
+    password: Nb!CoreProd#2019
+    driver-class-name: oracle.jdbc.OracleDriver
+northbridge:
+  seed:
+    enabled: false

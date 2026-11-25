@@ -34,6 +34,7 @@ Authentication is HTTP Basic against the core-banking user store. Roles: `CUSTOM
 ## core-banking (`:8080/api/v1`)
 
 ### Customers
+- `GET /customers?lastName=Oye` (TELLER, OPS) → `[Customer]` prefix match on last name
 - `GET /customers/{cif}` → `{ "cif": "100000001", "firstName": "Dana", "lastName": "Whitfield", "email": "...", "segment": "PREFERRED", "kycStatus": "VERIFIED" }`
 - `GET /customers/{cif}/accounts` → `[Account]`
 
@@ -58,7 +59,7 @@ Authentication is HTTP Basic against the core-banking user store. Roles: `CUSTOM
 - `GET /transactions/search?q=coffee&accountNumber=104000123455` → `[Transaction]` (free-text over description; known slow path)
 
 ### Transfers (internal book transfers; also used by boa-payments to post)
-- `POST /transfers` `{ "fromAccount": "104000123455", "toAccount": "104000123463", "amount": "250.00", "memo": "Rainy day", "idempotencyKey": "uuid" }`
+- `POST /transfers` (201 Created) `{ "fromAccount": "104000123455", "toAccount": "104000123463", "amount": "250.00", "memo": "Rainy day", "idempotencyKey": "uuid" }`
   → `201 { "transferId": "TRF-20261125-000231", "status": "POSTED", "postedAt": "...", "businessDate": "..." }`
   Errors: `422 { "code": "NSF", "message": "Insufficient available funds" }`, `422 LIMIT_EXCEEDED`, `404 ACCOUNT_NOT_FOUND`, `409 DUPLICATE`.
 - `GET /transfers/{transferId}` → transfer record.
