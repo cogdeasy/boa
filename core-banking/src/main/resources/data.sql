@@ -11,7 +11,14 @@ INSERT INTO account (account_number, cif, product_code, nickname, status, ledger
   ('211000048226', '100000002', 'DDA-SAV', 'Rainy Day',          'OPEN',   9300.00, 2500.00, '2019-08-02'),
   ('104000198762', '100000003', 'DDA-CHK', 'Premier Checking',   'OPEN',  38420.75, 25000.00, '2008-01-24'),
   ('211000048234', '100000004', 'DDA-CHK', 'Everyday Checking',  'FROZEN',  212.08, 1000.00, '2022-11-15'),
+  ('412000055217', '100000001', 'CC-VISA', 'Customized Cash Rewards Visa', 'OPEN', -1248.50, NULL, '2016-05-19'),
   ('307000555010', NULL,        'GL-SUSP', 'Payments suspense',  'OPEN',      0.00, NULL,    '2001-01-01');
+
+-- Per-transfer limit by destination product. A customer product without a row cannot receive transfers.
+INSERT INTO product_limit (product_code, per_transfer_limit) VALUES
+  ('DDA-CHK', 10000.00),
+  ('DDA-SAV', 25000.00),
+  ('CC-VISA', 15000.00);
 
 INSERT INTO funds_hold (account_number, amount, reason, placed_by, release_on, status) VALUES
   ('104000123455', 100.00, 'CHK-DEP-HOLD', 'teller01', '2026-11-28', 'ACTIVE');

@@ -29,6 +29,7 @@ Authentication is HTTP Basic against the core-banking user store. Roles: `CUSTOM
 | 104000123463 | 100000001 | DDA-SAV (Advantage Savings) | 22,150.00 |
 | 211000048218 | 100000002 | DDA-CHK | 1,045.12 |
 | 211000048226 | 100000002 | DDA-SAV | 9,300.00 |
+| 412000055217 | 100000001 | CC-VISA (Customized Cash Rewards Visa) | -1,248.50 (amount owed) |
 | 307000555010 | – | GL-SUSP (suspense GL) | 0.00 |
 
 ## core-banking (`:8080/api/v1`)
@@ -47,6 +48,18 @@ Authentication is HTTP Basic against the core-banking user store. Roles: `CUSTOM
     "ledgerBalance": "4812.33", "availableBalance": "4712.33", "holdAmount": "100.00",
     "openedOn": "2014-03-11" }
   ```
+- Products: `DDA-CHK` (checking), `DDA-SAV` (savings), `CC-VISA` (Customized Cash Rewards Visa credit card; a
+  negative `ledgerBalance` is the amount owed, and a transfer *to* the card is a card payment), `GL-*` (internal GL).
+- Per-transfer limits are keyed by the **destination** product and stored in the `product_limit` table
+  (source of truth for every channel and stub):
+
+  | destination product | per-transfer limit |
+  |---|---|
+  | DDA-CHK | 10000.00 |
+  | DDA-SAV | 25000.00 |
+  | CC-VISA | 15000.00 |
+
+  `GL-*` destinations (payments hub postings) are exempt. A customer product with no row fails closed (see Transfers).
 - `GET /accounts/{accountNumber}/transactions?from=yyyy-MM-dd&to=yyyy-MM-dd&page=0&size=50` → `{ "content": [Transaction], "page": 0, "size": 50, "total": 812 }`
   ```json
   { "id": 99812, "accountNumber": "104000123455", "postedAt": "2026-11-02T14:03:11",
@@ -62,7 +75,14 @@ Authentication is HTTP Basic against the core-banking user store. Roles: `CUSTOM
 ### Transfers (internal book transfers; also used by boa-payments to post)
 - `POST /transfers` (201 Created) `{ "fromAccount": "104000123455", "toAccount": "104000123463", "amount": "250.00", "memo": "Rainy day", "idempotencyKey": "uuid" }`
   → `201 { "transferId": "TRF-20261125-000231", "status": "POSTED", "postedAt": "...", "businessDate": "..." }`
-  Errors: `422 { "code": "NSF", "message": "Insufficient available funds" }`, `422 LIMIT_EXCEEDED`, `404 ACCOUNT_NOT_FOUND`, `409 DUPLICATE`.
+  Errors: `422 { "code": "NSF", "message": "Insufficient available funds" }`, `422 LIMIT_EXCEEDED`, `422 LIMIT_NOT_CONFIGURED`, `404 ACCOUNT_NOT_FOUND`, `409 DUPLICATE`.
+- Limits, checked in this order after the accounts are found and open:
+  1. Per-transfer limit of the destination product (`product_limit`, see Accounts) →
+     `422 { "code": "LIMIT_EXCEEDED", "message": "Per-transfer limit of 15000.00 for CC-VISA exceeded" }`.
+     A destination product with no `product_limit` row → `422 LIMIT_NOT_CONFIGURED` (fail closed; nothing is posted).
+  2. Available balance of the source → `422 NSF`.
+  3. Daily transfer limit of the source account (CUSTOMER callers only) → `422 LIMIT_EXCEEDED`.
+- Card payment example: `{ "fromAccount": "104000123455", "toAccount": "412000055217", "amount": "250.00" }` → `201 POSTED`.
 - `GET /transfers/{transferId}` → transfer record.
 
 ### Ops
