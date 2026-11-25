@@ -42,4 +42,19 @@ public class TransferApiTest {
                 .getForEntity("/api/v1/customers/100000002", String.class);
         assertEquals(HttpStatus.FORBIDDEN, response.getStatusCode());
     }
+
+    @Test
+    public void customerResolvesOwnProfile() {
+        ResponseEntity<Map> response = rest.withBasicAuth("dana.whitfield", "Welcome1!")
+                .getForEntity("/api/v1/customers/me", Map.class);
+        assertEquals(HttpStatus.OK, response.getStatusCode());
+        assertEquals("100000001", response.getBody().get("cif"));
+    }
+
+    @Test
+    public void tellerCannotUseCustomerSelfEndpoint() {
+        ResponseEntity<String> response = rest.withBasicAuth("teller01", "Teller#2019")
+                .getForEntity("/api/v1/customers/me", String.class);
+        assertEquals(HttpStatus.FORBIDDEN, response.getStatusCode());
+    }
 }

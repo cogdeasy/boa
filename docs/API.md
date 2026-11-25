@@ -35,6 +35,7 @@ Authentication is HTTP Basic against the core-banking user store. Roles: `CUSTOM
 
 ### Customers
 - `GET /customers?lastName=Oye` (TELLER, OPS) → `[Customer]` prefix match on last name
+- `GET /customers/me` (CUSTOMER) → the signed-in customer's `Customer` record; mobile apps call it after login to resolve the CIF
 - `GET /customers/{cif}` → `{ "cif": "100000001", "firstName": "Dana", "lastName": "Whitfield", "email": "...", "segment": "PREFERRED", "kycStatus": "VERIFIED" }`
 - `GET /customers/{cif}/accounts` → `[Account]`
 

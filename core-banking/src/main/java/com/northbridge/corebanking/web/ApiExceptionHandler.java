@@ -4,6 +4,7 @@ import com.northbridge.corebanking.domain.BankingException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.AccessDeniedException;
 import org.springframework.web.bind.annotation.ControllerAdvice;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 
@@ -23,6 +24,14 @@ public class ApiExceptionHandler {
         body.put("code", e.getCode());
         body.put("message", e.getMessage());
         return ResponseEntity.status(e.getHttpStatus()).body(body);
+    }
+
+    @ExceptionHandler(AccessDeniedException.class)
+    public ResponseEntity<Map<String, Object>> denied(AccessDeniedException e) {
+        Map<String, Object> body = new LinkedHashMap<String, Object>();
+        body.put("code", "FORBIDDEN");
+        body.put("message", "Access is denied");
+        return ResponseEntity.status(403).body(body);
     }
 
     @ExceptionHandler(IllegalArgumentException.class)

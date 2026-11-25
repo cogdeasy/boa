@@ -33,6 +33,12 @@ public class CustomerController {
         return accountService.findCustomersByLastName(lastName);
     }
 
+    @RequestMapping(value = "/me", method = RequestMethod.GET)
+    @PreAuthorize("hasRole('CUSTOMER')")
+    public Customer me() {
+        return accountService.getCustomer(currentUser.cif());
+    }
+
     @RequestMapping(value = "/{cif}", method = RequestMethod.GET)
     public Customer get(@PathVariable String cif) {
         requireOwnCif(cif);
