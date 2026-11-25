@@ -57,7 +57,7 @@ Authentication is HTTP Basic against the core-banking user store. Roles: `CUSTOM
   `channel` ∈ `CARD, ACH, WIRE, P2P, BILLPAY, BRANCH, ATM, INTEREST, FEE, TRANSFER`.
 - `productCode` ∈ `DDA-CHK` (checking), `DDA-SAV` (savings), `CC-VISA` (Customized Cash Rewards Visa credit card),
   `GL-*` (internal general-ledger accounts, e.g. `GL-SUSP`). A `CC-VISA` `ledgerBalance` is negative while a balance is owed;
-  a transfer into the card is a card payment and moves it towards zero.
+  a transfer into the card is a card payment and moves it towards zero. A payment above the amount owed posts in full and leaves a positive (credit) balance.
 - Per-transfer limits by destination product (`product_limit` table, source of truth for every channel):
 
   | productCode | product | perTransfer |
