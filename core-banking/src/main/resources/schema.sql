@@ -22,6 +22,12 @@ CREATE TABLE account (
     CONSTRAINT fk_account_customer FOREIGN KEY (cif) REFERENCES customer (cif)
 );
 
+CREATE TABLE product_limit (
+    product_code        VARCHAR(10)    PRIMARY KEY,
+    product_name        VARCHAR(60)    NOT NULL,
+    per_transfer_limit  DECIMAL(15,2)  NOT NULL
+);
+
 CREATE TABLE txn (
     id               BIGINT AUTO_INCREMENT PRIMARY KEY,
     account_number   VARCHAR(12)    NOT NULL,

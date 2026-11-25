@@ -3,6 +3,7 @@ package com.bofa.corebanking.service;
 import com.bofa.common.util.AuditLogger;
 import com.bofa.common.util.BankDates;
 import com.bofa.corebanking.dao.AccountDao;
+import com.bofa.corebanking.dao.ProductLimitDao;
 import com.bofa.corebanking.dao.TransactionDao;
 import com.bofa.corebanking.dao.TransferDao;
 import com.bofa.corebanking.domain.Account;
@@ -32,12 +33,15 @@ public class TransferService {
     private final AccountDao accountDao;
     private final TransactionDao transactionDao;
     private final TransferDao transferDao;
+    private final ProductLimitDao productLimitDao;
 
     @Autowired
-    public TransferService(AccountDao accountDao, TransactionDao transactionDao, TransferDao transferDao) {
+    public TransferService(AccountDao accountDao, TransactionDao transactionDao, TransferDao transferDao,
+                           ProductLimitDao productLimitDao) {
         this.accountDao = accountDao;
         this.transactionDao = transactionDao;
         this.transferDao = transferDao;
+        this.productLimitDao = productLimitDao;
     }
 
     @Transactional
@@ -66,6 +70,7 @@ public class TransferService {
         if (!from.isOpen() || !to.isOpen()) {
             throw new BankingException("ACCOUNT_NOT_OPEN", 422, "Both accounts must be open");
         }
+        checkPerTransferLimit(to, amount);
 
         Date now = new Date();
         Date businessDate = BankDates.businessDate(now);
@@ -108,6 +113,26 @@ public class TransferService {
         AuditLogger.record("AUD-TRF-POSTED", initiatedBy, "id=" + t.getTransferId() + " from=" + fromNumber + " to=" + toNumber + " amount=" + amount);
         log.info("Transfer {} posted from={} newBalance={} to={} newBalance={}", t.getTransferId(), fromNumber, fromBalance, toNumber, toBalance);
         return t;
+    }
+
+    /**
+     * Enforces the destination product's per-transfer limit. Internal GL accounts are exempt; any other
+     * product without a product_limit row is refused rather than posted without a limit.
+     */
+    private void checkPerTransferLimit(Account to, BigDecimal amount) {
+        if (to.isGeneralLedger()) {
+            return;
+        }
+        BigDecimal limit = productLimitDao.findPerTransferLimit(to.getProductCode());
+        if (limit == null) {
+            log.error("No per-transfer limit configured for product={} account={}", to.getProductCode(), to.getMaskedNumber());
+            throw new BankingException("PRODUCT_LIMIT_NOT_CONFIGURED", 422,
+                    "Transfers to product " + to.getProductCode() + " are not enabled: no per-transfer limit is configured");
+        }
+        if (amount.compareTo(limit) > 0) {
+            throw new BankingException("LIMIT_EXCEEDED", 422,
+                    "Amount exceeds the per-transfer limit of " + limit + " for " + to.getProductCode());
+        }
     }
 
     public Transfer get(String transferId) {

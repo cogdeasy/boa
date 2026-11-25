@@ -37,6 +37,29 @@ public class TransferApiTest {
     }
 
     @Test
+    public void cardPaymentUnderPerTransferLimitPosts() {
+        ResponseEntity<Map> response = transfer("104000123463", "440000528719", "250.00");
+        assertEquals(HttpStatus.CREATED, response.getStatusCode());
+        assertEquals("POSTED", response.getBody().get("status"));
+    }
+
+    @Test
+    public void cardPaymentOverPerTransferLimitIsRejected() {
+        ResponseEntity<Map> response = transfer("104000123463", "440000528719", "15000.01");
+        assertEquals(HttpStatus.UNPROCESSABLE_ENTITY, response.getStatusCode());
+        assertEquals("LIMIT_EXCEEDED", response.getBody().get("code"));
+        assertEquals("Amount exceeds the per-transfer limit of 15000.00 for CC-VISA", response.getBody().get("message"));
+    }
+
+    private ResponseEntity<Map> transfer(String from, String to, String amount) {
+        HttpHeaders headers = new HttpHeaders();
+        headers.setContentType(MediaType.APPLICATION_JSON);
+        String body = "{\"fromAccount\":\"" + from + "\",\"toAccount\":\"" + to + "\",\"amount\":\"" + amount + "\"}";
+        return rest.withBasicAuth("dana.whitfield", "Welcome1!")
+                .postForEntity("/api/v1/transfers", new HttpEntity<String>(body, headers), Map.class);
+    }
+
+    @Test
     public void customerCannotReadAnotherCustomersProfile() {
         ResponseEntity<String> response = rest.withBasicAuth("dana.whitfield", "Welcome1!")
                 .getForEntity("/api/v1/customers/100000002", String.class);

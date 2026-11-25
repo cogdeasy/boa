@@ -4,9 +4,15 @@ INSERT INTO customer (cif, first_name, last_name, email, phone, ssn_last4, segme
   ('100000003', 'Priya',  'Raghunath', 'priya.raghunath@example.com',  '+19175550177', '2051', 'PREMIER',   'VERIFIED', '2008-01-24'),
   ('100000004', 'Theresa','Okafor',    'theresa.okafor@example.com',   '+17185550122', '6639', 'RETAIL',    'REVIEW',   '2022-11-15');
 
+INSERT INTO product_limit (product_code, product_name, per_transfer_limit) VALUES
+  ('DDA-CHK', 'Advantage Checking',           10000.00),
+  ('DDA-SAV', 'Advantage Savings',            25000.00),
+  ('CC-VISA', 'Customized Cash Rewards Visa', 15000.00);
+
 INSERT INTO account (account_number, cif, product_code, nickname, status, ledger_balance, daily_transfer_limit, opened_on) VALUES
   ('104000123455', '100000001', 'DDA-CHK', 'Advantage Checking', 'OPEN',   4812.33, 5000.00, '2014-03-11'),
   ('104000123463', '100000001', 'DDA-SAV', 'Advantage Savings',  'OPEN',  22150.00, 5000.00, '2014-03-11'),
+  ('440000528719', '100000001', 'CC-VISA', 'Customized Cash Rewards Visa', 'OPEN', -1284.56, NULL, '2017-06-19'),
   ('211000048218', '100000002', 'DDA-CHK', 'Everyday Checking',  'OPEN',   1045.12, 2500.00, '2019-08-02'),
   ('211000048226', '100000002', 'DDA-SAV', 'Rainy Day',          'OPEN',   9300.00, 2500.00, '2019-08-02'),
   ('104000198762', '100000003', 'DDA-CHK', 'Premier Checking',   'OPEN',  38420.75, 25000.00, '2008-01-24'),
